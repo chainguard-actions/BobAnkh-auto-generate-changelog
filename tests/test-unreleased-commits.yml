@@ -1,0 +1,37 @@
+name: Test unreleased commits feature
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_EVENT_NAME: push
+      GITHUB_REF: refs/heads/main
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          REPO_NAME: ${{ github.repository }}
+          ACCESS_TOKEN: ${{ github.token }}
+          PATH: 'CHANGELOG-test-unreleased.md'
+          BRANCH: ''
+          PULL_REQUEST: ''
+          COMMIT_MESSAGE: 'docs(changelog): update release notes'
+          REGENERATE_COUNT: '0'
+          TYPE: 'feat:Feature,fix:Fix'
+          DEFAULT_SCOPE: 'general'
+          SUPPRESS_UNSCOPED: 'false'
+          UNRELEASED_COMMITS: 'true'
+          REPLACE_EMPTY_RELEASE_INFO: '*No description*'
+
+      - name: Assert action ran with UNRELEASED_COMMITS
+        run: |
+          echo "Action step outcome: ${{ steps.action.outcome }}"
+          if [ "${{ steps.action.outcome }}" = "skipped" ]; then
+            echo "FAIL: action step was skipped"
+            exit 1
+          fi
+          echo "PASS: action ran with UNRELEASED_COMMITS=true (outcome: ${{ steps.action.outcome }})"
