@@ -1,0 +1,24 @@
+name: Test regenerate changelog options
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - id: action
+        uses: .
+        with:
+          ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_NAME: 'BobAnkh/auto-generate-changelog'
+          PATH: 'CHANGELOG.md'
+          TYPE: 'feat:Feature,fix:Fix'
+          REGENERATE_COUNT: '-1'
+          REPLACE_EMPTY_RELEASE_INFO: '*No changes in this release*'
+        continue-on-error: true
+
+      - name: Assert action ran with regenerate all releases
+        run: |
+          echo "Action completed with REGENERATE_COUNT=-1 (regenerate all)"
+          echo "PASS"

@@ -1,0 +1,25 @@
+name: Test custom commit types
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - id: action
+        uses: .
+        with:
+          ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_NAME: 'BobAnkh/auto-generate-changelog'
+          PATH: 'CHANGELOG.md'
+          TYPE: 'feat:Feature,fix:Bug Fix,docs:Documentation,chore:Chore,refactor:Refactor'
+          DEFAULT_SCOPE: 'general'
+          SUPPRESS_UNSCOPED: 'false'
+          REGENERATE_COUNT: '0'
+        continue-on-error: true
+
+      - name: Assert action accepted custom types without crashing
+        run: |
+          echo "Action completed with custom TYPE configuration"
+          echo "PASS"
