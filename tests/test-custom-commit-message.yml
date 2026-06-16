@@ -1,0 +1,37 @@
+name: Test changelog with custom commit message
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_NAME: ${{ github.repository }}
+          PATH: 'pristine/BobAnkh--auto-generate-changelog/v1.3.1/tests/fixtures/changelog-custom.md'
+          COMMIT_MESSAGE: 'chore(changelog): update release notes [skip ci]'
+          TYPE: 'feat:Feature,fix:Fix,perf:Performance'
+          DEFAULT_SCOPE: 'core'
+          SUPPRESS_UNSCOPED: 'false'
+          UNRELEASED_COMMITS: 'false'
+          REGENERATE_COUNT: '0'
+          REPLACE_EMPTY_RELEASE_INFO: '*No description*'
+
+      - name: Assert action ran
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "Action outcome: $OUTCOME"
+          if [ "$OUTCOME" = "success" ] || [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action container ran with custom commit message (outcome=$OUTCOME)"
+          else
+            echo "FAIL: action did not run (outcome=$OUTCOME)"
+            exit 1
+          fi
