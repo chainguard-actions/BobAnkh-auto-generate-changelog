@@ -1,0 +1,27 @@
+name: Generate changelog
+on:
+  release:
+    types: [created, edited]
+  push:
+    branches: 
+      - dev
+
+permissions:
+  contents: write
+
+jobs:
+  generate-changelog:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@0717577d45739eb3c851188b29f50ed6c0b2194e # v2
+      with:
+        fetch-depth: 0
+    - uses: BobAnkh/auto-generate-changelog@7fb9808705671023e7c526b531ab1a61c0d41ca6 # dev
+      with:
+        ACCESS_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        PATH: 'CHANGELOG.md'
+        COMMIT_MESSAGE: 'docs(changelog): update release notes'
+        TYPE: 'feat:Feature,fix:Bug Fixes,docs:Documentation,refactor:Refactor,perf:Performance Improvements'
+        BRANCH: 'dev'
+        REGENERATE_COUNT: '5'
+        UNRELEASED_COMMITS: 'true'

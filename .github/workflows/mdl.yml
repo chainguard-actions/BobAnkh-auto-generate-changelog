@@ -1,0 +1,20 @@
+name: markdown lint
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+
+permissions:
+  contents: read
+
+jobs:
+  markdownlint-cli-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@0717577d45739eb3c851188b29f50ed6c0b2194e # v2
+      - uses: nosborn/github-action-markdown-cli@9fc95163471d6460c35cccad13645912aaa25d5f # v1.1.1
+        with:
+          config_file: .markdownlint.json
+          files: .
+          ignore_files: "CODE_OF_CONDUCT.md"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

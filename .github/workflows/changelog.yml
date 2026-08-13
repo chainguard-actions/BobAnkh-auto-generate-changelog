@@ -1,0 +1,27 @@
+name: Generate changelog
+on:
+  release:
+    types: [created, edited]
+  push:
+    branches: [$default-branch]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+# Allow one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+permissions:
+  contents: write
+jobs:
+  generate-changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+      - uses: BobAnkh/auto-generate-changelog@dcade405ec2e83773ccc70fec02574ec835c2cf8 # master
+        with:
+          ACCESS_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          PATH: "CHANGELOG.md"
+          COMMIT_MESSAGE: "docs(changelog): update release notes"
+          TYPE: "feat:Feature,fix:Bug Fixes,docs:Documentation,refactor:Refactor,perf:Performance Improvements"
